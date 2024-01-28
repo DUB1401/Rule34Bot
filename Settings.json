@@ -1,0 +1,13 @@
+{
+	"token": "",
+	"target": "",
+	"random": false,
+	"sections-names": {
+		"artists": "Автор|ы",
+		"characters": "Персонаж|и",
+		"fandoms": "Фэндом|ы",
+		"tags": "Тег|и",
+		"source": "Источник"
+	},
+	"delay": 1
+}

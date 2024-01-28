@@ -1,0 +1,10 @@
+# Visual Studio project files.
+Rule34Bot.pyproj
+Rule34Bot.sln
+.vs
+
+# Python cache.
+__pycache__
+
+# Downloaded files.
+Temp
