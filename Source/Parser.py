@@ -223,9 +223,10 @@ class Parser:
 		# Запись последнего ID.
 		if UpdateLastID == True: self.__Posts["last-post-id"] = LastID
 		# Сортировка записей.
+		self.__Posts["unsended-count"] = len(self.__Posts["unsended"].keys())
 		self.__Posts["unsended"] = dict(sorted(self.__Posts["unsended"].items(), reverse = True))
-		self.__Posts["sended"] = sorted(self.__Posts["sended"], reverse = True)
-		self.__Posts["errors"] = sorted(self.__Posts["errors"], reverse = True)
+		self.__Posts["sended"].sort(reverse = True)
+		self.__Posts["errors"].sort(reverse = True)
 		# Сохранение файла постов.
 		WriteJSON("Data/Posts.json", self.__Posts)
 		

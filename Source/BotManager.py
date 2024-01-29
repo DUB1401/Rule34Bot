@@ -91,6 +91,8 @@ class BotManager:
 		del self.__Posts["unsended"][str(PostID)]
 		# Запись данных в список.
 		self.__Posts[Mark].append(PostID)
+		# Вычисление количества неотправленных постов.
+		self.__Posts["unsended-count"] = len(self.__Posts["unsended"].keys())
 		# Сохранение.
 		WriteJSON("Data/Posts.json", self.__Posts)
 		
@@ -161,4 +163,6 @@ class BotManager:
 				# Приведение к строке.
 				ExceptionData = str(ExceptionData)
 				# Если изображение имеет неподдерживаемое разрешение.
-				if "PHOTO_INVALID_DIMENSIONS" in ExceptionData: self.__MarkAs(int(PostID), "errors")		
+				if "PHOTO_INVALID_DIMENSIONS" in ExceptionData: self.__MarkAs(int(PostID), "errors")
+				# Вывод в консоль: исключение.
+				print(ExceptionData)

@@ -95,6 +95,7 @@ if "clear" == CommandDataStruct.name:
 	if len(CommandDataStruct.flags) == 0:
 		# Очитска всех полей.
 		Data["last-post-id"] = None
+		Data["unsended-count"] = 0
 		Data["unsended"] = dict()
 		Data["sended"] = list()
 		Data["errors"] = list()
@@ -106,7 +107,8 @@ if "clear" == CommandDataStruct.name:
 		
 	# Если указано парсить новые посты.
 	if "unsended" in CommandDataStruct.flags:
-		# Очитска поля.
+		# Очитска полей.
+		Data["unsended-count"] = 0
 		Data["unsended"] = dict()
 		
 	# Если указано парсить новые посты.
