@@ -40,8 +40,8 @@ class Parser:
 			
 			# Для каждого классификатора.
 			for Item in Data["fullTags"]:
-				# Запись названия классификатора.
-				Classificators[Determinations[Item["type"]]].append(Item["value"])
+				# Если присутствует определение, записать название классификатора.
+				if Item["type"] in Determinations.keys(): Classificators[Determinations[Item["type"]]].append(Item["value"])
 		
 		return Classificators
 	
@@ -200,7 +200,7 @@ class Parser:
 		return NewPosts
 		
 	# Парсит посты.
-	def parse_posts(self, posts_id: list[int] | int):
+	def parse_posts(self, posts_id: list[int] | int, UpdateLastID: bool = True):
 		# Если указан один ID, преобразовать его в список.
 		if type(posts_id) == int: posts_id = [posts_id]
 		# Последний ID.
@@ -208,6 +208,10 @@ class Parser:
 		
 		# Для каждого поста.
 		for PostID in posts_id:
+			# Очистка консоли.
+			Cls()
+			# Вывод в консоль: парсинг.
+			print(f"Parsing post with ID {PostID}...")
 			# Запрос поста.
 			Post = self.__GetPost(PostID)
 			
@@ -215,9 +219,9 @@ class Parser:
 			if Post != None and str(PostID) not in self.__Posts["unsended"].keys() and PostID not in self.__Posts["sended"] and PostID not in self.__Posts["errors"]:
 				# Запись поста.
 				self.__Posts["unsended"][str(PostID)] = Post
-				
+
 		# Запись последнего ID.
-		self.__Posts["last-post-id"] = LastID
+		if UpdateLastID == True: self.__Posts["last-post-id"] = LastID
 		# Сортировка записей.
 		self.__Posts["unsended"] = dict(sorted(self.__Posts["unsended"].items(), reverse = True))
 		self.__Posts["sended"] = sorted(self.__Posts["sended"], reverse = True)

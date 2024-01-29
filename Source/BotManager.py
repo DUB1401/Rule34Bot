@@ -47,6 +47,7 @@ class BotManager:
 				# Для каждого сегмента.
 				for Segment in Post[Section]:
 					# Обработка сегмента.
+					Segment = HTML(Segment).plain_text
 					Segment = Segment.replace(" ", "_")
 					Segment = Segment.replace("(", "")
 					Segment = Segment.replace(")", "")
@@ -56,8 +57,11 @@ class BotManager:
 					Segment = Segment.replace("/", "")
 					Segment = Segment.replace("\\", "")
 					Segment = Segment.replace(".", "_")
-					# Если сегмент не является числом, добавить его.
-					if Segment.isdigit() == False and len(Caption) < 1008: Caption += "\#" + HTML(Markdown(Segment).escaped_text).plain_text + ", "
+					Segment = Segment.replace("<", "")
+					Segment = Segment.replace(">", "")
+					Segment = Segment.replace("=", "_")
+					# Если сегмент не является число, влазит в сообщение и не пустой, добавить его.
+					if Segment.isdigit() == False and len(Caption) < 1008 and Segment.strip(" _") != "": Caption += "\#" + Markdown(Segment).escaped_text + ", "
 				
 				# Очистка краевых символов.
 				Caption = Caption.strip(", ")
@@ -116,37 +120,45 @@ class BotManager:
 	def send(self):
 		
 		# Если есть посты для отправки.
-		if len(self.__Posts["unsended"].keys()) > 0 and os.path.exists("blocked") == False:
-			# ID поста.
-			PostID = random.choice(list(self.__Posts["unsended"].keys())) if self.__Settings["random"] == True else list(self.__Posts["unsended"].keys())[0]
-			# Описание поста.
-			Post = self.__Posts["unsended"][PostID]
-			# Скачивание файла.
-			self.__DownloadFile(Post["url"], Post["type"])
-			# Список медиафайлов.
-			MediaGroup = list()
-			# Построение описания.
-			Caption = self.__BuildCaption(Post)
-			
-			# Если размер файла меньше 20 MB.
-			if os.path.getsize("Temp/File." + Post["type"]) < 20971520:
-				# Буфер.
-				Bufer = self.__Types[Post["type"]](
-					media = open("Temp/File." + Post["type"], "rb"),
-					caption = Caption,
-					parse_mode = "MarkdownV2"
-				)
-				# Добавление в список.
-				MediaGroup.append(Bufer)
-
-				# Отправка сообщения.
-				self.__Bot.send_media_group(
-					chat_id = self.__Settings["target"],
-					media = MediaGroup
-				)
-				# Перемещение поста в список отправленных.
-				self.__MarkAs(int(PostID), "sended")
+		if len(self.__Posts["unsended"].keys()) > 0 and os.path.exists("Data/blocked") == False:
 				
-			else:
-				# Перемещение поста в список вызвавших ошибку.
-				self.__MarkAs(int(PostID), "errors")
+			try:
+				# ID поста.
+				PostID = random.choice(list(self.__Posts["unsended"].keys())) if self.__Settings["random"] == True else list(self.__Posts["unsended"].keys())[0]
+				# Описание поста.
+				Post = self.__Posts["unsended"][PostID]
+				# Скачивание файла.
+				self.__DownloadFile(Post["url"], Post["type"])
+				# Список медиафайлов.
+				MediaGroup = list()
+				# Построение описания.
+				Caption = self.__BuildCaption(Post)
+			
+				# Если размер файла меньше 20 MB.
+				if os.path.getsize("Temp/File." + Post["type"]) < 20971520:
+					# Буфер.
+					Bufer = self.__Types[Post["type"]](
+						media = open("Temp/File." + Post["type"], "rb"),
+						caption = Caption,
+						parse_mode = "MarkdownV2"
+					)
+					# Добавление в список.
+					MediaGroup.append(Bufer)
+
+					# Отправка сообщения.
+					self.__Bot.send_media_group(
+						chat_id = self.__Settings["target"],
+						media = MediaGroup
+					)
+					# Перемещение поста в список отправленных.
+					self.__MarkAs(int(PostID), "sended")
+				
+				else:
+					# Перемещение поста в список вызвавших ошибку.
+					self.__MarkAs(int(PostID), "errors")
+					
+			except Exception as ExceptionData:
+				# Приведение к строке.
+				ExceptionData = str(ExceptionData)
+				# Если изображение имеет неподдерживаемое разрешение.
+				if "PHOTO_INVALID_DIMENSIONS" in ExceptionData: self.__MarkAs(int(PostID), "errors")		
